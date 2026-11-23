@@ -14,33 +14,28 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Noto+Serif+Devanagari:wght@400;500;600;700;800&family=Rozha+One&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
 
- <!-- WhatsApp Preview - Corrected -->
-<meta property="og:type" content="website">
-<meta property="og:url"
- content="https://hridendra27.github.io/Espoused/4KSF4KSt4KSvIOCkqOCkvuCksOCkvuCkr%2BCkow.html">
+  <!-- WhatsApp Preview - Corrected -->
+  <meta property="og:type" content="website">
+  <meta property="og:url"
+   content="https://hridendra27.github.io/Espoused/4KSF4KSt4KSvIOCkqOCkvuCksOCkvuCkr%2BCkow.html">
 
-<meta property="og:title" content="शुभ विवाह | Hridendra ❤️ Shrishti">
-<meta property="og:description"
- content="Dear Guest & Family,
-It gives me great pleasure to invite you and your family to the Wedding Ceremony of my beloved son, Hridendra.
-As they begin this beautiful new journey together, your presence and blessings would mean the world to us. 🙏✨
-With love and warm regards,
-Veena Srivastava">
-<meta property="og:image"
- content="https://hridendra27.github.io/Espoused/pre.jpg?v=3">
-<meta property="og:image:secure_url"
- content="https://hridendra27.github.io/Espoused/pre.jpg?v=3">
+  <meta property="og:title" content="शुभ विवाह | Hridendra ❤️ Shrishti">
+  <meta property="og:description" content="सप्रेम आमंत्रण! Hridendra & Shrishti | 11 December 2026">
 
-<meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt"
- content="शुभ विवाह - Hridendra and Shrishti">
+  <meta property="og:image"
+   content="https://hridendra27.github.io/Espoused/pre.png?v=3">
+  <meta property="og:image:secure_url"
+   content="https://hridendra27.github.io/Espoused/pre.png?v=3">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image"
- content="https://hridendra27.github.io/Espoused/pre.jpg?v=3">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt"
+   content="शुभ विवाह - Hridendra and Shrishti">
 
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image"
+   content="https://hridendra27.github.io/Espoused/pre.png?v=3">
 
   <style>
     /* All-Four-Corners Viewport Swastik Overlay */
@@ -855,6 +850,9 @@ Veena Srivastava">
 </head>
 <body>
 
+  <!-- Background Music Track -->
+  <audio id="bgMusic" src="https://hridendra27.github.io/Espoused/wdh.mp3" preload="auto" autoplay loop playsinline></audio>
+
   <!-- Ambient Royal Texture & Floating Marigold Petals -->
   <div class="royal-bg-pattern"></div>
   <canvas id="petalsCanvas"></canvas>
@@ -901,7 +899,7 @@ Veena Srivastava">
           <span>A Message From Us</span>
         </button>
 
-        <button id="audioToggleBtn" type="button" title="Toggle Sacred Shankh Sound"
+        <button id="audioToggleBtn" type="button" title="Toggle Wedding Music"
           class="royal-btn px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
           <span id="audioIcon">🔔</span>
           <span class="hidden sm:inline" id="audioLabel">Sound On</span>
@@ -1428,6 +1426,7 @@ Veena Srivastava">
       const leaf2 = document.getElementById('leaf2');
       const leaf3 = document.getElementById('leaf3');
       const weddingVideo = document.getElementById('weddingVideo');
+      const bgMusic = document.getElementById('bgMusic');
 
       const prevBtn = document.getElementById('prevBtn');
       const nextBtn = document.getElementById('nextBtn');
@@ -1469,13 +1468,48 @@ Veena Srivastava">
       let isDesktopSpread = window.innerWidth >= 860;
 
       // ==========================================================
-      // 1. WEB AUDIO API: SHANKH (CONCH SHELL) & PAPER TURN SYNTHESIS
+      // 0. ONE-TIME AUTO-FLIP SEQUENCE (1st in 5s, rest in 8s)
+      // ==========================================================
+      let autoFlipTimer = null;
+      let autoFlipCycleCompleted = false;
+      let autoFlipStepCount = 0;
+
+      function clearAutoFlip(markCompleted = false) {
+        if (autoFlipTimer) {
+          clearTimeout(autoFlipTimer);
+          autoFlipTimer = null;
+        }
+        if (markCompleted) {
+          autoFlipCycleCompleted = true;
+        }
+      }
+
+      function scheduleNextAutoFlip(delayMs) {
+        clearAutoFlip(false);
+        if (autoFlipCycleCompleted || currentPage >= TOTAL_PAGES) {
+          autoFlipCycleCompleted = true;
+          return;
+        }
+        autoFlipTimer = setTimeout(() => {
+          if (autoFlipCycleCompleted || currentPage >= TOTAL_PAGES) {
+            autoFlipCycleCompleted = true;
+            return;
+          }
+          autoFlipStepCount++;
+          goNext(true);
+          if (currentPage >= TOTAL_PAGES) {
+            autoFlipCycleCompleted = true;
+          } else {
+            scheduleNextAutoFlip(8000);
+          }
+        }, delayMs);
+      }
+
+      // ==========================================================
+      // 1. MUSIC PLAYER (wdh.mp3) & PAPER TURN SOUND
       // ==========================================================
       let audioCtx = null;
       let soundEnabled = true; // Default Open Sound is ON
-      let ambientInterval = null;
-      let shankhPlaying = false;
-      let initialShankhTriggered = false;
 
       function initAudio() {
         if (!audioCtx) {
@@ -1483,7 +1517,7 @@ Veena Srivastava">
           audioCtx = new AudioContextClass();
         }
         if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
+          audioCtx.resume().catch(() => {});
         }
       }
 
@@ -1497,124 +1531,71 @@ Veena Srivastava">
         }
       }
 
-      // Sacred Shankh (Conch Shell) Resonant Blow Synthesis
-      function playShankhSound(duration = 3.2) {
-        if (!soundEnabled || shankhPlaying) return;
-        try {
-          initAudio();
-          if (!audioCtx || audioCtx.state !== 'running') return;
+      function isVideoActive() {
+        return Boolean(weddingVideo && !weddingVideo.paused && !weddingVideo.ended);
+      }
 
-          shankhPlaying = true;
-          const now = audioCtx.currentTime;
-          const baseFreq = 261.63; // Auspicious C4 resonance of a temple Shankh
+      function syncBackgroundMusic() {
+        if (!bgMusic) return;
 
-          const masterGain = audioCtx.createGain();
-          masterGain.gain.setValueAtTime(0.0001, now);
-          masterGain.gain.exponentialRampToValueAtTime(0.16, now + 0.35);
-          masterGain.gain.setValueAtTime(0.15, now + duration - 0.75);
-          masterGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        if (!soundEnabled || isVideoActive()) {
+          bgMusic.pause();
+          return;
+        }
 
-          // Conch cavity formant filter
-          const conchFilter = audioCtx.createBiquadFilter();
-          conchFilter.type = 'bandpass';
-          conchFilter.frequency.setValueAtTime(420, now);
-          conchFilter.frequency.exponentialRampToValueAtTime(560, now + 0.5);
-          conchFilter.frequency.setValueAtTime(540, now + duration - 0.6);
-          conchFilter.frequency.exponentialRampToValueAtTime(380, now + duration);
-          conchFilter.Q.value = 2.2;
+        bgMusic.muted = false;
+        bgMusic.volume = 0.85;
+        const playPromise = bgMusic.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {});
+        }
+      }
 
-          // Subtle breath vibrato LFO
-          const vibrato = audioCtx.createOscillator();
-          const vibratoGain = audioCtx.createGain();
-          vibrato.frequency.setValueAtTime(5.2, now);
-          vibratoGain.gain.setValueAtTime(2.8, now);
-          vibrato.connect(vibratoGain);
+      const gestureEvents = ['pointerdown', 'touchstart', 'touchend', 'mousedown', 'click', 'keydown', 'wheel'];
 
-          // Fundamental + Warm Harmonics of Shankh
-          const harmonics = [
-            { mult: 1.0, type: 'sawtooth', amp: 0.55 },
-            { mult: 2.0, type: 'triangle', amp: 0.32 },
-            { mult: 3.01, type: 'sine', amp: 0.14 }
-          ];
-
-          harmonics.forEach((h) => {
-            const osc = audioCtx.createOscillator();
-            const hGain = audioCtx.createGain();
-            osc.type = h.type;
-
-            // Natural conch pitch rise on attack & slight fall on release
-            osc.frequency.setValueAtTime(baseFreq * h.mult * 0.92, now);
-            osc.frequency.exponentialRampToValueAtTime(baseFreq * h.mult, now + 0.32);
-            osc.frequency.setValueAtTime(baseFreq * h.mult, now + duration - 0.55);
-            osc.frequency.exponentialRampToValueAtTime(baseFreq * h.mult * 0.94, now + duration);
-
-            vibratoGain.connect(osc.frequency);
-            hGain.gain.setValueAtTime(h.amp, now);
-
-            osc.connect(hGain);
-            hGain.connect(conchFilter);
-            osc.start(now);
-            osc.stop(now + duration + 0.05);
+      function unlockAudioOnFirstGesture() {
+        if (!soundEnabled) {
+          gestureEvents.forEach((evt) => {
+            document.removeEventListener(evt, unlockAudioOnFirstGesture, true);
           });
-
-          // Soft air/breath texture for realism
-          const breathSize = Math.floor(audioCtx.sampleRate * duration);
-          const breathBuffer = audioCtx.createBuffer(1, breathSize, audioCtx.sampleRate);
-          const breathData = breathBuffer.getChannelData(0);
-          for (let i = 0; i < breathSize; i++) {
-            breathData[i] = (Math.random() * 2 - 1) * 0.04;
-          }
-          const breathNoise = audioCtx.createBufferSource();
-          breathNoise.buffer = breathBuffer;
-
-          const breathFilter = audioCtx.createBiquadFilter();
-          breathFilter.type = 'bandpass';
-          breathFilter.frequency.setValueAtTime(900, now);
-          breathFilter.Q.value = 1.4;
-
-          breathNoise.connect(breathFilter);
-          breathFilter.connect(masterGain);
-
-          conchFilter.connect(masterGain);
-          masterGain.connect(audioCtx.destination);
-
-          vibrato.start(now);
-          vibrato.stop(now + duration + 0.05);
-          breathNoise.start(now);
-          breathNoise.stop(now + duration + 0.05);
-
-          setTimeout(() => {
-            shankhPlaying = false;
-          }, duration * 1000 + 80);
-        } catch (e) {
-          shankhPlaying = false;
+          return;
         }
-      }
-
-      function startAmbientShankhLoop() {
-        if (ambientInterval) clearInterval(ambientInterval);
-        ambientInterval = setInterval(() => {
-          if (soundEnabled && (!weddingVideo || weddingVideo.paused)) {
-            playShankhSound(2.8);
-          }
-        }, 12000);
-      }
-
-      function unlockAndPlayInitialShankh() {
-        if (!soundEnabled) return;
         initAudio();
-        if (audioCtx && audioCtx.state === 'running' && !initialShankhTriggered) {
-          initialShankhTriggered = true;
-          playShankhSound(3.2);
-          startAmbientShankhLoop();
+        syncBackgroundMusic();
+        if (!isVideoActive() && bgMusic && !bgMusic.paused) {
+          gestureEvents.forEach((evt) => {
+            document.removeEventListener(evt, unlockAudioOnFirstGesture, true);
+          });
         }
       }
 
-      // Attempt immediate playback on load + unlock on first user gesture if browser blocks autoplay
-      updateAudioUI();
-      ['pointerdown', 'touchstart', 'click', 'keydown'].forEach((evt) => {
-        document.addEventListener(evt, unlockAndPlayInitialShankh, { once: true, passive: true });
+      gestureEvents.forEach((evt) => {
+        document.addEventListener(evt, unlockAudioOnFirstGesture, { capture: true, passive: true });
       });
+
+      if (weddingVideo) {
+        weddingVideo.addEventListener('play', () => {
+          clearAutoFlip(true);
+          if (bgMusic) {
+            bgMusic.pause();
+          }
+        });
+        weddingVideo.addEventListener('pause', () => {
+          if (!weddingVideo.ended) {
+            syncBackgroundMusic();
+          }
+        });
+        weddingVideo.addEventListener('ended', () => {
+          syncBackgroundMusic();
+          if (currentPage < TOTAL_PAGES) {
+            goNext(true);
+          }
+        });
+      }
+
+      updateAudioUI();
+      syncBackgroundMusic();
+      document.addEventListener('DOMContentLoaded', syncBackgroundMusic);
 
       // ==========================================================
       // 1B. EXTRACTED WEDDING COUNTDOWN (TOP HEADER)
@@ -1661,7 +1642,7 @@ Veena Srivastava">
       weddingCountdownInterval = setInterval(updateHeaderCountdown, 1000);
 
       function playPageFlipSound() {
-        if (!soundEnabled) return;
+        if (!soundEnabled || isVideoActive()) return;
         try {
           initAudio();
           const duration = 0.28;
@@ -1695,11 +1676,9 @@ Veena Srivastava">
         updateAudioUI();
         if (soundEnabled) {
           initAudio();
-          initialShankhTriggered = true;
-          playShankhSound(3.2);
-          startAmbientShankhLoop();
-        } else {
-          if (ambientInterval) clearInterval(ambientInterval);
+          syncBackgroundMusic();
+        } else if (bgMusic) {
+          bgMusic.pause();
         }
       });
 
@@ -1707,7 +1686,6 @@ Veena Srivastava">
       // 2. 3D PAGE RENDERING & STATE SYNCHRONIZATION (DESKTOP + MOBILE)
       // ==========================================================
       function updateBookState(playAudio = true) {
-        const wasOnCover = leaf1 && !leaf1.classList.contains('flipped');
         isDesktopSpread = window.innerWidth >= 860;
         if (playAudio) playPageFlipSound();
 
@@ -1822,9 +1800,8 @@ Veena Srivastava">
           if (activeEl) activeEl.classList.add('active-face');
         }
 
-        // Play auspicious Shankh blow when opening the front cover
-        if (playAudio && wasOnCover && currentPage > 1 && soundEnabled) {
-          playShankhSound(3.0);
+        if (playAudio && soundEnabled) {
+          syncBackgroundMusic();
         }
 
         // Update Indicator (if present) & Button States
@@ -1858,7 +1835,9 @@ Veena Srivastava">
         });
       }
 
-      function goNext() {
+      function goNext(isAuto = false) {
+        if (!isAuto) clearAutoFlip(true);
+
         if (isDesktopSpread) {
           if (currentPage === 1) currentPage = 2;
           else if (currentPage === 2 || currentPage === 3) currentPage = 4;
@@ -1871,7 +1850,9 @@ Veena Srivastava">
         updateBookState(true);
       }
 
-      function goPrev() {
+      function goPrev(isAuto = false) {
+        if (!isAuto) clearAutoFlip(true);
+
         if (isDesktopSpread) {
           if (currentPage === 6) currentPage = 4;
           else if (currentPage === 4 || currentPage === 5) currentPage = 2;
@@ -1884,16 +1865,18 @@ Veena Srivastava">
         updateBookState(true);
       }
 
-      nextBtn.addEventListener('click', goNext);
-      prevBtn.addEventListener('click', goPrev);
+      nextBtn.addEventListener('click', () => goNext(false));
+      prevBtn.addEventListener('click', () => goPrev(false));
 
       openCloseBtn.addEventListener('click', () => {
+        clearAutoFlip(true);
         currentPage = currentPage === 1 ? 2 : 1;
         updateBookState(true);
       });
 
       pageDots.forEach((dot) => {
         dot.addEventListener('click', () => {
+          clearAutoFlip(true);
           const target = parseInt(dot.getAttribute('data-goto'), 10);
           if (target !== currentPage) {
             currentPage = target;
@@ -1907,6 +1890,7 @@ Veena Srivastava">
         face.addEventListener('click', (e) => {
           if (window.getSelection && window.getSelection().toString().length > 0) return;
           if (e.target.closest('video, a, button')) return;
+          clearAutoFlip(true);
           const pNum = parseInt(face.getAttribute('data-page'), 10);
 
           if (isDesktopSpread) {
@@ -1924,8 +1908,8 @@ Veena Srivastava">
       });
 
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') goNext();
-        else if (e.key === 'ArrowLeft') goPrev();
+        if (e.key === 'ArrowRight') goNext(false);
+        else if (e.key === 'ArrowLeft') goPrev(false);
       });
 
       // Touch Swipe Support for Mobile & Trackpads
@@ -1940,8 +1924,9 @@ Veena Srivastava">
         const dx = e.changedTouches[0].screenX - touchStartX;
         const dy = e.changedTouches[0].screenY - touchStartY;
         if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
-          if (dx < 0) goNext();
-          else goPrev();
+          clearAutoFlip(true);
+          if (dx < 0) goNext(true);
+          else goPrev(true);
         }
       }, { passive: true });
 
@@ -2040,7 +2025,10 @@ Veena Srivastava">
         updateBookState(false);
         initParticles();
         animateParticles();
-        unlockAndPlayInitialShankh();
+        syncBackgroundMusic();
+        if (!autoFlipCycleCompleted && autoFlipStepCount === 0 && !autoFlipTimer) {
+          scheduleNextAutoFlip(5000);
+        }
       };
 
       // ==========================================================
@@ -2091,6 +2079,7 @@ Veena Srivastava">
       }
 
       window.openWeddingMsg = function () {
+        clearAutoFlip(true);
         const popupName = document.getElementById('popupGuestName');
         if (popupName) {
           popupName.textContent = recipientName ? (recipientName + ' जी') : 'अतिथि';
